@@ -374,13 +374,13 @@ function getTextWidth(country_name) {
   return ctx.measureText(country_name).width;
 }
 
-/* Tache 7 */
+/* Tache 7 
 function colorRandom() {
   var randomNumber = Math.floor(Math.random() * 100);
   var circleElements = container.nodes()[0].selectAll("circle");
   var randomCountry = circleElements.select(function(d, i) {
     return i === randomNumber ? this : null;
-  });
+  }); */
 
   randomCountry
     .transition() // first transition
@@ -398,7 +398,7 @@ function colorRandom() {
   setTimeout(colorRandom, 10000);
 }
 
-colorRandom();
+//colorRandom();
 
 /* Tache 10
 
