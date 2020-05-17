@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="css/gapminder.css" />
   </head>
   <body>
+    <!-- pretty ugly for now, but wait for CSS! -->
     <header>
       <img src="img/gapminder.png" alt="ENSAI logo" />
       <h1>Tutorial #3 — Datavisualisation with JavaScript</h1>
@@ -37,23 +38,32 @@
           <select id="y-axis-button" class="control-unit">
             <option value="life_expectancy">Life expectancy</option>
             <option value="co2_emissions">CO² Emissions</option>
-            <option value="None">None</option>
+            <option value="none">None</option>
           </select>
           <br />
           <span class="control-label">Years</span>
           <span class="control-unit">
             <button id="play">▷</button>
             <button id="pause">||</button>
-            <span id="year-min" class="year-label">firstyear</span>
-            <!--Q2-->
-            <input id="year" type="range" min="0" max="10" value="2" step="1" />
-            <span id="year-max" class="year-label">lastyear</span>
+            ><!-- Q1.9.-->
+            <span id="year-min" class="year-label">year1</span>
+            <input
+              id="year"
+              type="range"
+              min="1950"
+              max="2010"
+              value="1950"
+              step="1"
+            />
+            <span id="year-max" class="year-label">yearY</span>
+            <span id="current_year" value="1950">yeary</span>
           </span>
           <br />
           <button id="reinitialize">Reinitialize</button>
         </div>
       </div>
     </section>
+
     <section id="content">
       <svg id="my_graph">
         <g id="y-axis"></g>
@@ -70,7 +80,8 @@
       </p>
       <p>
         <strong>Data source:</strong>
-        <a href="https://www.gapminder.org/data">Gapminder</a>
+        <a href="https://www.gapminder.org/data">Gapminder</a
+        ><!-- Q1.10.-->
       </p>
     </footer>
 

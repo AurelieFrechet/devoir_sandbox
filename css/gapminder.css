@@ -61,7 +61,7 @@ body {
   height: 600px;
 }
 footer {
-  position: fixed; /* Bonus : So that the footer stays in place*/
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
@@ -109,6 +109,19 @@ a:hover {
 }
 #countries g text {
   transition: opacity 1s;
+  font-size: 12px;
+}
+#year {
+  float: center;
+}
+#current_year {
+  font-weight: bold;
+  border: solid 2px rgb(102, 75, 17);
+  padding: 3px;
+  margin: 0 0 0 20px;
+  color: rgb(41, 30, 6);
+  background-color: rgb(214, 176, 70);
+  border-radius: 5px;
 }
 
 /* controls styling */
