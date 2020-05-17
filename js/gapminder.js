@@ -380,7 +380,7 @@ function colorRandom() {
   var circleElements = container.nodes()[0].selectAll("circle");
   var randomCountry = circleElements.select(function(d, i) {
     return i === randomNumber ? this : null;
-  }); */
+  }); 
 
   randomCountry
     .transition() // first transition
@@ -396,7 +396,7 @@ function colorRandom() {
         .duration(1500); // second ease
     });
   setTimeout(colorRandom, 10000);
-}
+}*/
 
 //colorRandom();
 
