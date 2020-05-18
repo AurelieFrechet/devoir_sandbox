@@ -36,16 +36,18 @@
         <div id="controls">
           <span class="control-label">Y-axis</span>
           <select id="y-axis-button" class="control-unit">
-            <option value="life_expectancy">Life expectancy</option>
-            <option value="co2_emissions">COÂ² Emissions</option>
-            <!-- Amélioration n°3 : On ajoute la variable "none" dans la liste de choix -->
+            <!-- Création du choix none en plus pour l'axe des y,
+            ce choix cachera l'axe y et alignera les points horizontalement -->
             <option value="none">None</option>
+            <option value="life_expectancy">Life expectancy</option>
+            <option value="co2_emissions">CO² Emissions</option>
           </select>
           <br />
           <span class="control-label">Years</span>
           <span class="control-unit">
             <button id="play">▷</button>
-            <button id="pause">||</button>
+            <button id="pause">||</button
+            ><!-- Q1.9.-->
             <span id="year-min" class="year-label">1950</span>
             <input
               id="year"
@@ -54,20 +56,23 @@
               max="2010"
               value="1950"
               step="1"
-              oninput="current_year.value = year.value"
             />
             <span id="year-max" class="year-label">2010</span>
           </span>
           <br />
           <button id="reinitialize">Reinitialize</button>
+          <!-- Création de l'affichage de l'année correspondant au graphique -->
+          <p>
+            year :
+            <!-- On initialise l'année à l'année de départ, 
+              elle sera modifier ensuite dans le fichier js-->
+            <span id="year_print">1950</span>
+          </p>
         </div>
       </div>
     </section>
 
     <section id="content">
-      <p align="right">Year : <output id="current_year"></output></p>
-      <!-- Amélioration n°2 : On affiche l'année en cours sur le coin droit du graphique -->
-      <!-- Pour cela, on utilise l'argument oninput ainsi qu'une balise output -->
       <svg id="my_graph">
         <g id="y-axis"></g>
         <g id="x-axis"></g>
@@ -83,7 +88,8 @@
       </p>
       <p>
         <strong>Data source:</strong>
-        <a href="https://www.gapminder.org/data">Gapminder</a>
+        <a href="https://www.gapminder.org/data">Gapminder</a
+        ><!-- Q1.10.-->
       </p>
     </footer>
 

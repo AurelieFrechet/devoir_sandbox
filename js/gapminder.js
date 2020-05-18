@@ -1,33 +1,43 @@
+/* 
+
+Modifications apportées :
+  - Amélioration 1 complète
+  - Amélioration 2 complète
+  - Amélioration 3 complète
+  - Amélioration 4 complète
+  - Amélioration 5 complète
+  - Amélioration 6 : les labels sont bien mis en dessous des cercles mais
+    l'option mettre les labels dans les cercles n'a pas été faite"
+  - Amélioration 7 : l'animation des points toutes les 30 secondes fonctionne, 
+    mais les points ne reviennent pas à leur position initiale.
+
+*/
+
 import * as d3 from "d3";
+import { forceManyBody } from "d3";
 
 /* selection of HTML and SVG elements */
-let section = d3.select("#content"),
+let body = d3.select("body"),
+  section = d3.select("#content"),
+  graph = d3.select("#my_graph"),
   container = d3.select("#countries"),
   yaxis_button = d3.select("#y-axis-button"),
   play_button = d3.select("#play"),
   pause_button = d3.select("#pause"),
-  slider = d3.select("#year");
-
-/* Amélioration n° 1 */
-d3.select("#pause").style("display", "none"); // Au lancement de l'appli, le bouton pause n'est pas affiché.
+  slider = d3.select("#year"),
+  reinitialize = d3.select("#reinitialize");
 
 /* display parameters */
 const radius = 20,
   spacing = 3,
   time_pace = 500,
-  height = 400,
-  width = section.node().offsetWidth,
-  inner_margin = 30,
-  outer_margin = 30,
+  height = 400, // section.node().getBBox().height, // height of display zone
+  inner_margin = 30, // margin between axes and first dot
+  outer_margin = 30, // margin between axis and exterior of the display zone
   margin = inner_margin + outer_margin,
-  yNone = 50; // On défini ICI la valeur yNone qui servira à aligner les données dans le cas ou la variable NONE est sélectionnée
-
-/* Amélioration n°5*/
-
-let graph = d3
-  .select("#my_graph")
-  .attr("viewBox", "0 0 " + width + " " + height); // On utilise l'attribut viewBox afin de conserver le ratio longeur / largeur
-// Width et Height sont la largeur et la longueur de l'aire dans laquelle apparaîtra le grpahique
+  time_pace_hint = 30000; //le temps au bout duquel l'utilisateur sera alerté
+//La largeur de la fenêtre n'est plus une constante, c'est une variable maintenant
+let width = section.node().offsetWidth; // getBBox().width,  // width  of display zone
 
 /* interaction variables */
 let t_duration = 0,
@@ -47,11 +57,7 @@ const compute_scales = function(countries_svg) {
     yMax = d3.max(
       data
         .map(d =>
-          which_var === "co2_emissions"
-            ? d.co2_emissions
-            : which_var === "life_expectancy "
-            ? d.life_expectancy
-            : 100
+          which_var === "co2_emissions" ? d.co2_emissions : d.life_expectancy
         )
         .flat()
     ),
@@ -90,21 +96,27 @@ function draw_yaxis({ countries_svg, x, y, r, o }) {
     .attr("id", "y-axis")
     .attr("transform", "translate(" + outer_margin + ",0)");
 
-  let y_label = y_axis
-    .append("text")
-    .attr("text-anchor", "end")
-    .attr("fill", "grey")
-    .attr("x", -margin)
-    .attr("y", 10)
-    .attr("transform", "rotate(-90)");
+  //Si la variable which_var n'est pas égal à none on montre l'axe des y comme précédemment
+  if (which_var && which_var !== "none") {
+    let y_label = y_axis
+      .append("text")
+      .attr("text-anchor", "end")
+      .attr("fill", "grey")
+      .attr("x", -margin)
+      .attr("y", 10)
+      .attr("transform", "rotate(-90)");
 
-  y_label.text(
-    which_var === "co2_emissions"
-      ? "COÂ² Emissions (tons/year)"
-      : which_var === "life_expectancy"
-      ? "Life Expectancy (years)"
-      : "Unknokwn variable :("
-  );
+    y_label.text(
+      which_var === "co2_emissions"
+        ? "CO² Emissions (tons/year)"
+        : which_var === "life_expectancy"
+        ? "Life Expectancy (years)"
+        : "Unknokwn variable :("
+    );
+    //Si la variable which_var est none, on cache l'axe des y
+  } else {
+    document.getElementById("y-axis").style.display = "none";
+  }
 
   y_axis.call(d3.axisLeft().scale(y));
 }
@@ -149,72 +161,42 @@ function draw_xaxis({ countries_svg, x, y, r, o }) {
 function draw_countries({ countries_svg, x, y, r, o }) {
   let transition = d3.transition().duration(t_duration);
 
+  //On modifie la valeur de l'année correspondant au graphique à l'aide de la variable year_current
+  document.getElementById("year_print").innerHTML = year_current;
+
   countries_svg.transition(transition).attr("fill", d => o(d.region));
 
-  /* Amélioration n°3 : On aligne les données sur la variable none est sélectionnée */
-  if (which_var === "none") {
-    countries_svg
-      .select("circle")
-      .transition(transition)
-      .attr("cx", d => x(d.income[year_index]))
-      .attr("cy", d => y(yNone)) // Y prend une constante pour tous les pays si la variable NONE est sélectionnée
-      .attr("r", d => r(d.population[year_index]))
-      .attr("stroke", d => o(d.region));
-  } else {
-    countries_svg
-      .select("circle")
-      .transition(transition)
-      .attr("cx", d => x(d.income[year_index]))
-      .attr("cy", d => y(d[which_var][year_index]))
-      .attr("r", d => r(d.population[year_index]))
-      .attr("stroke", d => o(d.region));
-  }
+  countries_svg
+    .select("circle")
+    .transition(transition)
+    .attr("cx", d => x(d.income[year_index]))
+    //Si la variable y n'est pas none on donne la valeur des y comme avant,
+    //Sinon, on la fixe à 50 pour toutes les valeurs de x
+    .attr("cy", d => y(d[which_var] ? d[which_var][year_index] : 50))
+    .attr("r", d => r(d.population[year_index]))
+    .attr("stroke", d => o(d.region));
 
   countries_svg.sort((a, b) => b.population - a.population);
 
-  let centrage = 0;
-
-  /* Amélioration n°6 : On pose une condition : il faut que le nom du pays rentre dans la bulle (c'est à dire dans 2 fois son rayon) */
-  // Pour cela, on considère que un caractère fait la même largeur que 2 unités de rayon (choisi à tatons)
-
-  if (
-    2 * countries_svg.select("circle").attr("r") >=
-    countries_svg.select("text").text().length * 2
-  ) {
-    centrage = 2 * countries_svg.select("circle").attr("r") + spacing;
-  } else {
-    centrage = 0;
-  }
-
-  if (which_var === "none") {
-    countries_svg
-      .select("text")
-      .transition(transition)
-      .attr(
-        "x",
-        d =>
-          x(d.income[year_index]) +
-          r(d.population[year_index]) +
-          spacing -
-          centrage
-      )
-      .attr("y", d => y(yNone + 5))
-      .text(d => d.name);
-  } else {
-    countries_svg
-      .select("text")
-      .transition(transition)
-      .attr(
-        "x",
-        d =>
-          x(d.income[year_index]) +
-          r(d.population[year_index]) +
-          spacing -
-          centrage // Puis on soustrait la variable centrage dans la coordonnée Y du label pour le faire rentrer dans la bulle
-      )
-      .attr("y", d => y(d[which_var][year_index]) + 5)
-      .text(d => d.name);
-  }
+  countries_svg
+    .select("text")
+    .transition(transition)
+    .attr(
+      "x",
+      d => x(d.income[year_index]) //+ r(d.population[year_index]) + spacing
+    )
+    //L'ordonée du texte = l'ordonnée du cercle - son rayon/2 + 5.
+    //Cela positionne le texte en dessous du cercle auquel il correspond
+    .attr(
+      "y",
+      d =>
+        y(
+          d[which_var]
+            ? d[which_var][year_index] - r(d.population[year_index] / 2)
+            : 50 - r(d.population[year_index] / 2)
+        ) + 5
+    )
+    .text(d => d.name);
 
   t_duration = 250;
 
@@ -226,40 +208,42 @@ function toggle_selected() {
   this.classList.toggle("selected");
 }
 
+//Fonction pour réninitialiser le slider
+const reinitializer = function() {
+  year_current = year_min;
+  year_index = 0;
+  slider.property("value", year_min);
+};
+
 let t;
 
 function start_timer() {
+  //On désactive le bouton play lorsqu'il est déja activé
+  document.getElementById("play").disabled = true;
+  document.getElementById("pause").disabled = false;
+
   if (year_current === year_max) {
-    // remise Ã  zÃ©ro
-    year_current = year_min;
-    year_index = 0;
-    slider.property("value", year_min);
+    reinitializer();
   }
 
-  /* Amélioration n°1*/
-  t = d3.interval(increment, time_pace); //timer
+  t = d3.interval(increment, time_pace); // timer
 
-  d3.select("#play").style("display", "none"); // Le bouton play disparait lorsque l'on clique dessus
-  d3.select("#pause").style("display", "inline-block"); // ...Et le bouton pause apparait alors
-
-  d3.select("#play").attr("disabled", "disabled"); // Le bouton play est également désactivé par prévaution
-  d3.select("#pause").attr("disabled", null); // ...Et le bouton pause et ré-activé
+  //On réinitialise le slider quand le bouton reinitialize est cliqué
+  reinitialize.on("click", reinitializer);
 }
 
 function pause_timer() {
   t.stop();
-
-  d3.select("#pause").style("display", "none"); // Le bouton pause disparait lorsque l'on clique dessus
-  d3.select("#play").style("display", "inline-block"); // ..Et le bouton play apparait.
-
-  d3.select("#pause").attr("disabled", "disabled"); // Le bouton pause est également désactivé par prévaution
-  d3.select("#play").attr("disabled", null); // ...Et le bouton play est également désactivé par prévaution
+  //On désactive le bouton pause lorsqu'il est déja activé
+  document.getElementById("pause").disabled = true;
+  document.getElementById("play").disabled = false;
+  console.log(document.getElementById("pause"));
+  //document.getElementById("play").disabled = false;
 }
-/* Fin de l'amélioration n°1 */
 
 function increment() {
   if (year_current === year_max) {
-    t.stop();
+    pause_timer();
   } else {
     year_current += 1;
     year_index = year_current - year_min;
@@ -275,9 +259,7 @@ d3.json("data/countries.json").then(countries_json => {
   let countries_svg = container
     .selectAll("g")
     .data(countries_json)
-    .join("g")
-    .attr("width", width)
-    .attr("height", height);
+    .join("g");
 
   countries_svg.append("circle");
   countries_svg.append("text");
@@ -285,25 +267,6 @@ d3.json("data/countries.json").then(countries_json => {
   container.dispatch("data_ready", {
     detail: countries_svg
   });
-
-  /* Amélioration n°4 : On généralise le code */
-  // Calcul des années min et max des données
-  let MaxY = d3.max(
-      countries_svg
-        .data()
-        .map(d => d.year)
-        .flat()
-    ),
-    MinY = d3.min(
-      countries_svg
-        .data()
-        .map(d => d.year)
-        .flat()
-    );
-  slider.property("min", MinY); // Définition des min et max sur le slider
-  slider.property("max", MaxY);
-  d3.select("#year-min").text(MinY); // Affichage des min et max sur le slider
-  d3.select("#year-max").text(MaxY);
 });
 
 /* subscriptions */
@@ -327,12 +290,82 @@ container.on("countries_ready", function() {
   set_up_listeners(countries_svg);
 });
 
+function slider_min_max(countries_svg) {
+  let data = countries_svg.data();
+
+  let slider_min = d3.min(data.map(d => d.year).flat()),
+    slider_max = d3.max(data.map(d => d.year).flat());
+
+  //Eciture des valeur minimale et maximale d'année dans le navigateur
+  body
+    .select("#sidepannel")
+    .selectAll("div")
+    .select("#controls")
+    .selectAll(".control-unit")
+    .select("#year-min")
+    .text(slider.property("min"));
+
+  body
+    .select("#sidepannel")
+    .selectAll("div")
+    .select("#controls")
+    .selectAll(".control-unit")
+    .select("#year-max")
+    .text(slider.property("max"));
+
+  return {
+    slider_min: slider_min,
+    slider_max: slider_max
+  };
+}
+
 function set_up_listeners({ countries_svg, x, y, r, o }) {
+  slider.property("max", slider_min_max(countries_svg).slider_max); //définition de la valeur maximale de l'input
+  slider.property("min", slider_min_max(countries_svg).slider_min); //définition de la valeur minimale de l'input
+
+  //Fonction pour animer un point sélectionné au hasard
+
+  function bounce() {
+    let size_data = 195;
+    let transition = d3.transition().duration(5000);
+
+    //Un nombre est est aléatoirement choisi
+    //Ce nombre sera le rang du pays à sélectionner pour l'animation
+
+    let selected_country_index = Math.floor(Math.random() * size_data);
+
+    //le groupe correspondant au pays choisi est sélectionné
+    let selected = d3.select(countries_svg._groups[0][selected_country_index]);
+
+    //animation du cercle du pays choisi et de son label
+    //Le cercle bouge mais ne revient pas à sa position initiale...
+    selected
+      .select("circle")
+      .transition(transition)
+      .attr("cy", 20)
+      .transition(transition)
+      .attr("cy", (height - outer_margin) / 2);
+
+    selected
+      .select("text")
+      .transition(transition)
+      .attr("y", 20)
+      .transition(transition)
+      .attr("y", (height - outer_margin) / 2);
+  }
+  //timer pour alerter l'utilisateur chaque time_pace_hint ms
+  let hint_timer = d3.interval(bounce, time_pace_hint);
+  //bounce();
+  year_min = +slider.property("min");
+  year_current = +slider.property("value");
+  year_max = +slider.property("max");
+
   countries_svg.on("click", toggle_selected);
   play_button.on("click", start_timer);
   pause_button.on("click", pause_timer);
 
   slider.on("input", function() {
+    hint_timer.stop();
     year_current = +slider.property("value");
     year_index = year_current - year_min;
     draw_countries({ countries_svg, x, y, r, o });
@@ -346,30 +379,12 @@ function set_up_listeners({ countries_svg, x, y, r, o }) {
     draw_yaxis(params);
   });
 
-  /* Amélioration n°7 : On active des bulles au hasard à intervalle régulier */
-  // Ici, il n'y a pas d'aléatoire, les bulles s'activeront dans un ordre identique à chaque fois
-  d3.selectAll("circle")
-    .transition()
-    .delay(function(d, i) {
-      return i * 20000 + 5000; // On fixe un delay de 20 sec entre chaque cercle + 5 seconde avant le premier cercle
-    })
-    .on("start", function repeat() {
-      d3.active(this) // Activation d'une bulle
-        .attr(
-          "r",
-          d => r(d.population[year_index]) + 5 // On augmente alors le rayon du cercle de 5
-        )
-        .style(
-          "fill-opacity", // On fixe l'opacité de la bulle à 1
-          1
-        )
-        .transition()
-        .delay(
-          10000
-        ) /* On met un delay de 10 seconde avant de repasser à l'état initial */
-        .attr("r", d => r(d.population[year_index]))
-        .style("fill-opacity", 0.5); /* retour à l'opacité initiale */
-    });
-
-  /* FIN Improvement 6*/
+  //C'est ici qu'on change la variable pour la largeur de la fenêtre d'affichage
+  window.addEventListener("resize", function() {
+    width = section.node().offsetWidth; //Redéfinition de la largeur du graphique
+    let params = compute_scales(countries_svg); //Redéfinition des paramètres
+    draw_countries(params); //On réécrit les points des données
+    draw_xaxis(params); //On réécrit l'axe x
+  });
+  //Maintenant, dès qu'on modifie la largeur de la fenêtre, l'axe des x s'élargit ou se rétrécit
 }

@@ -1,7 +1,7 @@
 {
   "name": "Gapminder",
   "version": "1.0.0",
-  "description": "Gapminder for ENSAI Dataviz assignment 2019/2020 by Benjamin Lorez and Clement Soulignac",
+  "description": "Gapminder base for ENSAI Dataviz assignment 2019/2020",
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
@@ -13,6 +13,5 @@
   "devDependencies": {
     "@babel/core": "7.2.0",
     "parcel-bundler": "^1.6.1"
-  },
-  "keywords": []
+  }
 }

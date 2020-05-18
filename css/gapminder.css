@@ -58,8 +58,7 @@ body {
 }
 #content svg {
   width: 100%;
-  height: 100%;
-  /* Amélioration n°5 : On modifie également la hauteur */
+  height: 600px;
 }
 footer {
   position: absolute;
