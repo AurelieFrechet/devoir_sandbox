@@ -1,3 +1,12 @@
+<!--- 
+Oriane Vidamant - Ugo Di Nallo
+Improvement réalisés entièrement et fichiers concernés:
+  - Improvement 1 : fichier .js
+  - Improvement 2 : fichier .js et fichier html
+  - Improvement 3 : fichier .js et fichier html
+  - Improvement 5 : fichier .js
+  - Improvement 6 : fichier .js 
+-->
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,7 +15,6 @@
     <link rel="stylesheet" type="text/css" href="css/gapminder.css" />
   </head>
   <body>
-    <!-- pretty ugly for now, but wait for CSS! -->
     <header>
       <img src="img/gapminder.png" alt="ENSAI logo" />
       <h1>Tutorial #3 — Datavisualisation with JavaScript</h1>
@@ -36,11 +44,12 @@
         <div id="controls">
           <span class="control-label">Y-axis</span>
           <select id="y-axis-button" class="control-unit">
-            <!-- Création du choix none en plus pour l'axe des y,
-            ce choix cachera l'axe y et alignera les points horizontalement -->
-            <option value="none">None</option>
             <option value="life_expectancy">Life expectancy</option>
             <option value="co2_emissions">CO² Emissions</option>
+            <!--Début Partie HTML Improvement 3 -->
+            <!--- Ajout de l'option none" -->
+            <option value="none">None</option>
+            <!--FIN Partie HTML Improvement 3 -->
           </select>
           <br />
           <span class="control-label">Years</span>
@@ -57,17 +66,14 @@
               value="1950"
               step="1"
             />
+            <!--Début Partie HTML : Improvement 2 -->
             <span id="year-max" class="year-label">2010</span>
+            <!-- On affiche l'année en cours grâce au fichier js -->
+            <p>Année : <span id="annee"></span></p>
+            <!-- Fin Partie HTML : Improvement 2 -->
           </span>
           <br />
           <button id="reinitialize">Reinitialize</button>
-          <!-- Création de l'affichage de l'année correspondant au graphique -->
-          <p>
-            year :
-            <!-- On initialise l'année à l'année de départ, 
-              elle sera modifier ensuite dans le fichier js-->
-            <span id="year_print">1950</span>
-          </p>
         </div>
       </div>
     </section>
@@ -88,8 +94,7 @@
       </p>
       <p>
         <strong>Data source:</strong>
-        <a href="https://www.gapminder.org/data">Gapminder</a
-        ><!-- Q1.10.-->
+        <a href="https://www.gapminder.org/data">Gapminder</a>
       </p>
     </footer>
 
